@@ -1,27 +1,37 @@
-// src/App.tsx
-import { useEffect, useState } from "react";
-import { OrderRow } from "./components/OrderRow";
-import { useStompClient } from "./hooks/useStompClient";
+
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import DisplayPage from './pages/DisplayPage';
+import AdminPage from './pages/AdminPage';
+import type { Order } from './types/order';
+import { getOrders } from './api/orders';
 
 function App() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const [orders, setOrders] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      const fetchedOrders = await getOrders();
+      setOrders(fetchedOrders);
+      setLoading(false);
+    };
 
-  useStompClient((newOrder) => {
-    console.log("🆕 새로운 주문:", newOrder);
-    setOrders(prev => [...prev, newOrder]);
-  });
+    fetchOrders();
+  }, []);
+
+  if (loading) {
+    return <div className="flex h-screen w-screen items-center justify-center">Loading...</div>;
+  }
 
   return (
-    <div className="flex w-screen h-screen">
-      <div className="flex-1 flex items-center justify-center border border-black bg-gray-300 text-2xl">
-                Box 3
-      </div>
-      <OrderRow title={'준비중'}/>
-       <OrderRow title={'준비완료'}/>
-    
-
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DisplayPage orders={orders} />} />
+        <Route path="/admin" element={<AdminPage orders={orders} setOrders={setOrders} />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
