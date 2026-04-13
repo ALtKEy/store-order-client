@@ -1,26 +1,21 @@
 // src/App.tsx
-import { useEffect, useState } from "react";
-import { OrderRow } from "./components/OrderRow";
-import { useStompClient } from "./hooks/useStompClient";
+import { useState } from "react";
+import { View } from "./views/View";
 
 function App() {
-
-  const [orders, setOrders] = useState<any[]>([]);
-
-  useStompClient((newOrder) => {
-    console.log("🆕 새로운 주문:", newOrder);
-    setOrders(prev => [...prev, newOrder]);
-  });
+  const [isAdmin, setIsAdmin] = useState(true);
 
   return (
-    <div className="flex w-screen h-screen">
-      <div className="flex-1 flex items-center justify-center border border-black bg-gray-300 text-2xl">
-                Box 3
-      </div>
-      <OrderRow title={'준비중'}/>
-       <OrderRow title={'준비완료'}/>
-    
-
+    <div className="w-full h-screen overflow-hidden">
+      {/* 테스트를 위한 isAdmin 스위치 */}
+      <button
+        onClick={() => setIsAdmin(!isAdmin)}
+        className="fixed bottom-4 right-4 z-[9999] bg-gray-800 text-white px-4 py-2 rounded-full text-xs opacity-50 hover:opacity-100 transition-opacity"
+      >
+        모드 전환: {isAdmin ? "관리자" : "사용자"}
+      </button>
+        <View
+        />
     </div>
   );
 }
